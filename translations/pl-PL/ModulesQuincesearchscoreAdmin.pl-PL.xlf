@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en-US" target-language="pl-PL" datatype="plaintext" original="ModulesQuincesearchscoreAdmin">
+    <body>
+
+      <!-- Moduł -->
+      <trans-unit id="quince.searchscore.name">
+        <source>Quince Search Score</source>
+        <target>Quince Search Score</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.description">
+        <source>Tracks search phrases and the products customers click after searching. Lets staff set a manual score that nudges search ranking.</source>
+        <target>Zapisuje wyszukiwane frazy i produkty, które klienci klikają po wyszukaniu. Pozwala obsłudze sklepu ustawić ręczną ocenę, która przesuwa produkt w wynikach wyszukiwania.</target>
+      </trans-unit>
+
+      <!-- Komunikaty -->
+      <trans-unit id="quince.searchscore.csrf">
+        <source>Invalid security token, please try again.</source>
+        <target>Nieprawidłowy token bezpieczeństwa, spróbuj ponownie.</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.save_failed">
+        <source>Could not save the score.</source>
+        <target>Nie udało się zapisać oceny.</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.saved">
+        <source>Score saved.</source>
+        <target>Ocena zapisana.</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.none_selected">
+        <source>No rows were selected.</source>
+        <target>Nie zaznaczono żadnego wiersza.</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.scores_removed">
+        <source>Selected scores removed.</source>
+        <target>Zaznaczone oceny usunięte.</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.phrases_removed">
+        <source>Selected phrases removed.</source>
+        <target>Zaznaczone frazy usunięte.</target>
+      </trans-unit>
+
+      <!-- Zakładki -->
+      <trans-unit id="quince.searchscore.tab_products">
+        <source>Products</source>
+        <target>Produkty</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.tab_phrases">
+        <source>Phrases</source>
+        <target>Frazy</target>
+      </trans-unit>
+
+      <!-- Filtry -->
+      <trans-unit id="quince.searchscore.search">
+        <source>Search</source>
+        <target>Szukaj</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.phrase_placeholder">
+        <source>Phrase...</source>
+        <target>Fraza...</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.filter">
+        <source>Filter</source>
+        <target>Filtruj</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.clear">
+        <source>Clear</source>
+        <target>Wyczyść</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.product_placeholder">
+        <source>Product name...</source>
+        <target>Nazwa produktu...</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.category">
+        <source>Category</source>
+        <target>Kategoria</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.all_categories">
+        <source>All categories</source>
+        <target>Wszystkie kategorie</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.score_from">
+        <source>Score from</source>
+        <target>Ocena od</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.score_to">
+        <source>Score to</source>
+        <target>Ocena do</target>
+      </trans-unit>
+
+      <!-- Tabela: liczba przed napisem -->
+      <trans-unit id="quince.searchscore.count_phrases">
+        <source>phrases</source>
+        <target>fraz</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.count_products">
+        <source>products</source>
+        <target>produktów</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.delete_selected">
+        <source>Delete selected</source>
+        <target>Usuń zaznaczone</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.delete_selected_scores">
+        <source>Delete selected scores</source>
+        <target>Usuń zaznaczone oceny</target>
+      </trans-unit>
+
+      <!-- Tabela: kolumny -->
+      <trans-unit id="quince.searchscore.col_phrase">
+        <source>Phrase</source>
+        <target>Fraza</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.col_count">
+        <source>Count</source>
+        <target>Liczba</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.col_last">
+        <source>Last searched</source>
+        <target>Ostatnio szukana</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.col_product">
+        <source>Product</source>
+        <target>Produkt</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.col_score">
+        <source>Score</source>
+        <target>Ocena</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.save">
+        <source>Save</source>
+        <target>Zapisz</target>
+      </trans-unit>
+
+      <!-- Stopka tabeli -->
+      <trans-unit id="quince.searchscore.empty">
+        <source>No data found.</source>
+        <target>Brak danych.</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.pager">
+        <source>Page %page% of %total%, %count% results</source>
+        <target>Strona %page% z %total%, wyniki: %count%</target>
+      </trans-unit>
+      <trans-unit id="quince.searchscore.per_page">
+        <source>Show</source>
+        <target>Pokaż</target>
+      </trans-unit>
+
+    </body>
+  </file>
+</xliff>
