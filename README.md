@@ -50,8 +50,11 @@ search field, such as an e-mail address, that text ends up in the phrase list; s
 can delete it there.
 
 The tracking endpoint is public and anonymous, as the customer's browser calls it.
-It accepts only XHR requests and existing product IDs, but it does not limit how often
-it is called, so the counters show trends rather than exact figures.
+It accepts only XHR requests and existing product IDs, and counts at most 120 events
+(searches and clicks together) per address in ten minutes; anything above that is
+answered but not counted. The address is stored only as a hash, in the Quince Engine
+table that keeps form limits, and is deleted after ten minutes. Counters still show
+trends rather than exact figures.
 
 ## Requirements
 

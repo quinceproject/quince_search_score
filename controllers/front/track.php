@@ -31,11 +31,33 @@ class Quince_Search_ScoreTrackModuleFrontController extends ModuleFrontControlle
     /** @var bool */
     public $ajax = true;
 
+    /** Klucz licznika w strażniku formularzy silnika, osobny od formularzy sklepu. */
+    private const LIMIT_KEY = 'quince_search_score_track';
+
+    /** Ile zdarzeń (fraz i kliknięć razem) z jednego adresu w oknie poniżej. */
+    private const LIMIT_COUNT = 120;
+
+    /** Okno licznika w sekundach. */
+    private const LIMIT_WINDOW = 600;
+
     public function initContent()
     {
         if (!$this->isXmlHttpRequest() || Tools::getValue('type') === false) {
             $this->jsonError('Invalid request', 400);
         }
+
+        // Ten sam strażnik co przy podpowiedziach quince_search: skrót adresu
+        // w tabeli silnika, okno dziesięciu minut. Limit jest liberalny, bo za
+        // jednym adresem stoi czasem całe biuro; ma zatrzymać nabijanie licznika,
+        // a nie klienta. Odmowa wygląda jak przyjęte zdarzenie, które się nie
+        // policzyło: przeglądarka klienta nie ma tu czego naprawiać.
+        $straznik = new \Quince\Engine\Form\FormGuard();
+
+        if ($straznik->tooOften(self::LIMIT_KEY, self::LIMIT_COUNT, self::LIMIT_WINDOW)) {
+            $this->jsonSuccess(['tracked' => false]);
+        }
+
+        $straznik->accept(self::LIMIT_KEY);
 
         $type = Tools::getValue('type');
 
