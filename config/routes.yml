@@ -1,0 +1,35 @@
+# Ekran modułu — natywna zakładka pod „Quince project" (zob. installTabs()
+# w quince_search_score.php). Jeden kontroler, dwie zakładki Products/Phrases
+# przełączane query stringiem `tab`, nie osobnymi trasami.
+
+quince_search_score:
+  path: search-score
+  methods: [GET]
+  defaults:
+    _controller: Quince\SearchScore\Controller\Admin\SearchScoreController::indexAction
+    _legacy_controller: 'AdminQuinceSearchScore'
+    _legacy_link: 'AdminQuinceSearchScore'
+
+quince_search_score_update_score:
+  path: search-score/score
+  methods: [POST]
+  defaults:
+    _controller: Quince\SearchScore\Controller\Admin\SearchScoreController::updateScoreAction
+    _legacy_controller: 'AdminQuinceSearchScore'
+    _legacy_link: 'AdminQuinceSearchScore:save'
+
+quince_search_score_products_bulk_delete:
+  path: search-score/products/bulk-delete
+  methods: [POST]
+  defaults:
+    _controller: Quince\SearchScore\Controller\Admin\SearchScoreController::bulkDeleteProductsAction
+    _legacy_controller: 'AdminQuinceSearchScore'
+    _legacy_link: 'AdminQuinceSearchScore:save'
+
+quince_search_score_phrases_bulk_delete:
+  path: search-score/phrases/bulk-delete
+  methods: [POST]
+  defaults:
+    _controller: Quince\SearchScore\Controller\Admin\SearchScoreController::bulkDeletePhrasesAction
+    _legacy_controller: 'AdminQuinceSearchScore'
+    _legacy_link: 'AdminQuinceSearchScore:save'

@@ -1,0 +1,14 @@
+services:
+  _defaults:
+    public: true
+    autoconfigure: true
+    autowire: true
+    tags: ['controller.service_arguments']
+
+  Quince\SearchScore\Repository:
+    class: Quince\SearchScore\Repository
+
+  Quince\SearchScore\Controller\Admin\SearchScoreController:
+    class: Quince\SearchScore\Controller\Admin\SearchScoreController
+    arguments:
+      - '@Quince\SearchScore\Repository'

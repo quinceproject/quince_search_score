@@ -1,0 +1,133 @@
+{% extends '@Modules/quince_search_score/views/templates/admin/layout.html.twig' %}
+{% import '@Modules/quince_search_score/views/templates/admin/_macros/icons.html.twig' as icons %}
+
+{% trans_default_domain 'Modules.Quincesearchscore.Admin' %}
+
+{% block quince_body %}
+
+<nav class="qc-tabs" style="margin-bottom:20px">
+    <a href="{{ path('quince_search_score', {tab: 'products'}) }}" class="qc-tab">{{ 'Products'|trans }}</a>
+    <a href="{{ path('quince_search_score', {tab: 'phrases'}) }}" class="qc-tab qc-active">{{ 'Phrases'|trans }}</a>
+</nav>
+
+<div class="qc-stack">
+
+    <div class="qc-card">
+        <div class="qc-card-body">
+            <form method="get" action="{{ path('quince_search_score') }}" style="display:flex; gap:8px; flex-wrap:wrap; align-items:flex-end">
+                <input type="hidden" name="tab" value="phrases">
+                <div class="qc-field" style="max-inline-size:280px">
+                    <label class="qc-label" for="q-phrase-search">{{ 'Search'|trans }}</label>
+                    <input type="text" class="qc-field-base qc-focusable" id="q-phrase-search" name="search"
+                           value="{{ search }}" placeholder="{{ 'Phrase...'|trans }}">
+                </div>
+                <button type="submit" class="qc-btn qc-btn-outline">
+                    {{ icons.icon('search', 14) }} {{ 'Filter'|trans }}
+                </button>
+                <a href="{{ path('quince_search_score', {tab: 'phrases'}) }}" class="qc-btn qc-btn-text">{{ 'Clear'|trans }}</a>
+            </form>
+        </div>
+    </div>
+
+    <div style="display:flex; align-items:center; justify-content:space-between">
+        <span class="qc-muted" style="font-size:var(--text-sm)"><strong style="color:var(--fg-1)">{{ total }}</strong> {{ 'phrases'|trans }}</span>
+        <form method="post" action="{{ path('quince_search_score_phrases_bulk_delete', baseQuery) }}" id="qss-bulk-form-phrases">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('quince_search_score_phrases_bulk_delete') }}">
+            <input type="hidden" name="ids" id="qss-bulk-ids-phrases">
+            <button type="submit" class="qc-btn qc-btn-sm qc-btn-danger" id="qss-bulk-btn-phrases" style="display:none">
+                {{ icons.icon('trash', 14) }} {{ 'Delete selected'|trans }}
+            </button>
+        </form>
+    </div>
+
+    <div class="qc-table-wrap">
+        <table class="qc-table">
+            <thead>
+                <tr>
+                    <th style="width:32px"><input type="checkbox" class="qc-checkbox" id="qss-check-all-phrases"></th>
+                    {% for col, label in {'id_phrase': 'ID', 'phrase': 'Phrase'|trans, 'count': 'Count'|trans, 'date_upd': 'Last searched'|trans} %}
+                        {% set nextDir = (orderBy == col and orderDir == 'ASC') ? 'DESC' : 'ASC' %}
+                        <th{{ col == 'count' ? ' style="width:100px"' }}>
+                            <a href="{{ path('quince_search_score', baseQuery|merge({order_by: col, order_dir: nextDir, page: 1})) }}">
+                                {{ label }}
+                                {% if orderBy == col %}{{ icons.icon('chevronDown', 12) }}{% endif %}
+                            </a>
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% if items|length == 0 %}
+                    <tr><td colspan="4" class="qc-muted" style="padding:20px; text-align:center">{{ 'No data found.'|trans }}</td></tr>
+                {% else %}
+                    {% for item in items %}
+                        <tr>
+                            <td><input type="checkbox" class="qc-checkbox qss-row-check-phrases" value="{{ item.id_phrase }}"></td>
+                            <td>{{ item.id_phrase }}</td>
+                            <td><strong>{{ item.phrase }}</strong></td>
+                            <td><span class="qc-badge qc-badge-accent">{{ item.count }}</span></td>
+                            <td>{{ item.date_upd }}</td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+        <div class="qc-table-foot">
+            <div style="display:flex; align-items:center; gap:14px">
+                <span class="qc-muted">{{ 'Page %page% of %total%, %count% results'|trans({'%page%': page, '%total%': totalPages, '%count%': total}) }}</span>
+                <form method="get" action="{{ path('quince_search_score') }}" style="display:flex; align-items:center; gap:6px">
+                    {% for key, value in baseQuery %}
+                        {% if key != 'per_page' %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endif %}
+                    {% endfor %}
+                    <label class="qc-muted" style="margin:0">{{ 'Show'|trans }}</label>
+                    <div class="qc-select-wrap">
+                        <select name="per_page" class="qc-field-base qc-select qc-focusable" style="height:28px; font-size:var(--text-xs); padding-right:26px" onchange="this.form.submit()">
+                            {% for opt in perPageOptions %}
+                                <option value="{{ opt }}"{{ opt == perPage ? ' selected' }}>{{ opt }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="qc-pagination">
+                {% for i in max(1, page - 2)..min(totalPages, page + 2) %}
+                    <a class="qc-page-btn{{ i == page ? ' qc-active' }}" href="{{ path('quince_search_score', baseQuery|merge({page: i})) }}">{{ i }}</a>
+                {% endfor %}
+                {% if page < totalPages %}
+                    <a class="qc-page-btn" href="{{ path('quince_search_score', baseQuery|merge({page: page + 1})) }}">&rsaquo;</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var checkAll = document.getElementById('qss-check-all-phrases');
+    var rowChecks = document.querySelectorAll('.qss-row-check-phrases');
+    var bulkBtn = document.getElementById('qss-bulk-btn-phrases');
+    var bulkIds = document.getElementById('qss-bulk-ids-phrases');
+    var bulkForm = document.getElementById('qss-bulk-form-phrases');
+
+    function refresh() {
+        var checked = Array.prototype.filter.call(rowChecks, function (c) { return c.checked; });
+        bulkBtn.style.display = checked.length ? '' : 'none';
+        bulkIds.value = checked.map(function (c) { return c.value; }).join(',');
+    }
+
+    if (checkAll) {
+        checkAll.addEventListener('change', function () {
+            rowChecks.forEach(function (c) { c.checked = checkAll.checked; });
+            refresh();
+        });
+    }
+    rowChecks.forEach(function (c) { c.addEventListener('change', refresh); });
+    if (bulkForm) {
+        bulkForm.addEventListener('submit', function (e) {
+            if (!bulkIds.value) { e.preventDefault(); }
+        });
+    }
+})();
+</script>
+
+{% endblock %}

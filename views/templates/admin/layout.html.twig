@@ -1,0 +1,63 @@
+{#
+  Layout panelu modułu.
+
+  Rozszerza natywny layout panelu PrestaShopa, nie layout silnika Quince:
+  ten moduł jest zakładką pod „Quince project", nie pozycją wewnątrz panelu
+  Quince Engine — `{% extends %}` z cudzego katalogu dawałoby tu obcy sidebar.
+
+  Arkusze qc-* brane są wprost z silnika (asset), nie kopiowane: moduł zakłada
+  obecność `quince_engine` w tym sklepie, więc powielanie tokenów i powłoki
+  tylko wprowadziłoby ryzyko rozjechania dwóch kopii.
+
+  Ten moduł ma jeden kontroler i dwie zakładki (Products/Phrases)
+  przełączane query stringiem, nie osobnymi trasami — `quince_tabs` z bloku
+  poniżej (wspólny mechanizm `quinceTabs`/`quinceRoute` dla modułów z
+  kilkoma OSOBNYMI trasami) tu się nie przyda i zostaje nieużyty; nawigację
+  między zakładkami rysuje każdy szablon sam, w `quince_body`.
+#}
+{% extends '@PrestaShop/Admin/layout.html.twig' %}
+
+{% trans_default_domain 'Modules.Quincesearchscore.Admin' %}
+
+{% set qcVer = '?v=' ~ (app.debug ? 'now'|date('U') : '0.1.0') %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('../modules/quince_engine/views/css/tokens/base.css') ~ qcVer }}">
+    <link rel="stylesheet" href="{{ asset('../modules/quince_engine/views/css/tokens/colors.css') ~ qcVer }}">
+    <link rel="stylesheet" href="{{ asset('../modules/quince_engine/views/css/tokens/typography.css') ~ qcVer }}">
+    <link rel="stylesheet" href="{{ asset('../modules/quince_engine/views/css/tokens/spacing.css') ~ qcVer }}">
+    <link rel="stylesheet" href="{{ asset('../modules/quince_engine/views/css/tokens/components.css') ~ qcVer }}">
+    <link rel="stylesheet" href="{{ asset('../modules/quince_engine/views/css/panel.css') ~ qcVer }}">
+{% endblock %}
+
+{% block content %}
+<div class="qc-root">
+    <div class="qc-content">
+        {% block quince_tabs %}
+            {% if quinceTabs|default([]) %}
+                <nav class="qc-tabs" style="margin-bottom:20px">
+                    {% for tab in quinceTabs %}
+                        <a href="{{ path(tab.route) }}"
+                           class="qc-tab{{ quinceRoute|default('') == tab.route ? ' qc-active' : '' }}"
+                           {{ quinceRoute|default('') == tab.route ? 'aria-current="page"' : '' }}>{{ tab.label }}</a>
+                    {% endfor %}
+                </nav>
+            {% endif %}
+        {% endblock %}
+
+        {% block quince_intro %}{% endblock %}
+
+        {% block quince_body %}{% endblock %}
+
+        {% block quince_actionbar %}
+            {% set qcAkcje %}{% block quince_actions %}{% endblock %}{% endset %}
+            {% if qcAkcje|trim is not empty %}
+                <div class="qc-actionbar" style="margin-top:20px; display:flex; justify-content:flex-end; gap:8px">
+                    {{ qcAkcje }}
+                </div>
+            {% endif %}
+        {% endblock %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,169 @@
+{% extends '@Modules/quince_search_score/views/templates/admin/layout.html.twig' %}
+{% import '@Modules/quince_search_score/views/templates/admin/_macros/icons.html.twig' as icons %}
+
+{% trans_default_domain 'Modules.Quincesearchscore.Admin' %}
+
+{% block quince_body %}
+
+<nav class="qc-tabs" style="margin-bottom:20px">
+    <a href="{{ path('quince_search_score', {tab: 'products'}) }}" class="qc-tab qc-active">{{ 'Products'|trans }}</a>
+    <a href="{{ path('quince_search_score', {tab: 'phrases'}) }}" class="qc-tab">{{ 'Phrases'|trans }}</a>
+</nav>
+
+<div class="qc-stack">
+
+    <div class="qc-card">
+        <div class="qc-card-body">
+            <form method="get" action="{{ path('quince_search_score') }}" style="display:flex; gap:8px; flex-wrap:wrap; align-items:flex-end">
+                <input type="hidden" name="tab" value="products">
+                <div class="qc-field" style="max-inline-size:240px">
+                    <label class="qc-label" for="q-search">{{ 'Search'|trans }}</label>
+                    <input type="text" class="qc-field-base qc-focusable" id="q-search" name="search"
+                           value="{{ search }}" placeholder="{{ 'Product name...'|trans }}">
+                </div>
+                <div class="qc-field" style="max-inline-size:220px">
+                    <label class="qc-label" for="q-category">{{ 'Category'|trans }}</label>
+                    <div class="qc-select-wrap">
+                        <select id="q-category" name="category" class="qc-field-base qc-select qc-focusable">
+                            <option value="0">{{ 'All categories'|trans }}</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}"{{ category == cat.id ? ' selected' }}>
+                                    {% if cat.depth > 0 %}{% for i in 1..cat.depth %}&nbsp;&nbsp;{% endfor %}{% endif %}{{ cat.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        {{ icons.icon('chevronDown', 14, 'qc-select-chevron') }}
+                    </div>
+                </div>
+                <div class="qc-field" style="max-inline-size:110px">
+                    <label class="qc-label" for="q-score-min">{{ 'Score from'|trans }}</label>
+                    <input type="number" class="qc-field-base qc-focusable" id="q-score-min" name="score_min" value="{{ scoreMin }}" placeholder="0">
+                </div>
+                <div class="qc-field" style="max-inline-size:110px">
+                    <label class="qc-label" for="q-score-max">{{ 'Score to'|trans }}</label>
+                    <input type="number" class="qc-field-base qc-focusable" id="q-score-max" name="score_max" value="{{ scoreMax }}" placeholder="999">
+                </div>
+                <button type="submit" class="qc-btn qc-btn-outline">
+                    {{ icons.icon('search', 14) }} {{ 'Filter'|trans }}
+                </button>
+                <a href="{{ path('quince_search_score', {tab: 'products'}) }}" class="qc-btn qc-btn-text">{{ 'Clear'|trans }}</a>
+            </form>
+        </div>
+    </div>
+
+    <div style="display:flex; align-items:center; justify-content:space-between">
+        <span class="qc-muted" style="font-size:var(--text-sm)"><strong style="color:var(--fg-1)">{{ total }}</strong> {{ 'products'|trans }}</span>
+        <form method="post" action="{{ path('quince_search_score_products_bulk_delete', baseQuery) }}" id="qss-bulk-form-products">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('quince_search_score_products_bulk_delete') }}">
+            <input type="hidden" name="ids" id="qss-bulk-ids-products">
+            <button type="submit" class="qc-btn qc-btn-sm qc-btn-danger" id="qss-bulk-btn-products" style="display:none">
+                {{ icons.icon('trash', 14) }} {{ 'Delete selected scores'|trans }}
+            </button>
+        </form>
+    </div>
+
+    <div class="qc-table-wrap">
+        <table class="qc-table">
+            <thead>
+                <tr>
+                    <th style="width:32px"><input type="checkbox" class="qc-checkbox" id="qss-check-all-products"></th>
+                    {% for col, label in {'id_product': 'ID', 'name': 'Product'|trans, 'category': 'Category'|trans, 'score': 'Score'|trans} %}
+                        {% set nextDir = (orderBy == col and orderDir == 'ASC') ? 'DESC' : 'ASC' %}
+                        <th{{ col == 'score' ? ' style="width:140px"' }}>
+                            <a href="{{ path('quince_search_score', baseQuery|merge({order_by: col, order_dir: nextDir, page: 1})) }}">
+                                {{ label }}
+                                {% if orderBy == col %}{{ icons.icon('chevronDown', 12) }}{% endif %}
+                            </a>
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% if items|length == 0 %}
+                    <tr><td colspan="4" class="qc-muted" style="padding:20px; text-align:center">{{ 'No data found.'|trans }}</td></tr>
+                {% else %}
+                    {% for item in items %}
+                        <tr>
+                            <td><input type="checkbox" class="qc-checkbox qss-row-check-products" value="{{ item.id_product }}"></td>
+                            <td>{{ item.id_product }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.category }}</td>
+                            <td>
+                                <form method="post" action="{{ path('quince_search_score_update_score', baseQuery) }}" class="qss-score">
+                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('quince_search_score_update_score') }}">
+                                    <input type="hidden" name="id_product" value="{{ item.id_product }}">
+                                    <input type="number" name="score" value="{{ item.score }}"
+                                           oninput="this.closest('.qss-score').classList.toggle('qss-dirty', this.value !== this.defaultValue)">
+                                    <button type="submit" class="qc-btn qc-btn-sm qc-btn-outline" title="{{ 'Save'|trans }}">
+                                        {{ icons.icon('check', 14) }}
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+        <div class="qc-table-foot">
+            <div style="display:flex; align-items:center; gap:14px">
+                <span class="qc-muted">{{ 'Page %page% of %total%, %count% results'|trans({'%page%': page, '%total%': totalPages, '%count%': total}) }}</span>
+                <form method="get" action="{{ path('quince_search_score') }}" style="display:flex; align-items:center; gap:6px">
+                    {% for key, value in baseQuery %}
+                        {% if key != 'per_page' %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endif %}
+                    {% endfor %}
+                    <label class="qc-muted" style="margin:0">{{ 'Show'|trans }}</label>
+                    <div class="qc-select-wrap">
+                        <select name="per_page" class="qc-field-base qc-select qc-focusable" style="height:28px; font-size:var(--text-xs); padding-right:26px" onchange="this.form.submit()">
+                            {% for opt in perPageOptions %}
+                                <option value="{{ opt }}"{{ opt == perPage ? ' selected' }}>{{ opt }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="qc-pagination">
+                {% for i in max(1, page - 2)..min(totalPages, page + 2) %}
+                    <a class="qc-page-btn{{ i == page ? ' qc-active' }}" href="{{ path('quince_search_score', baseQuery|merge({page: i})) }}">{{ i }}</a>
+                {% endfor %}
+                {% if page < totalPages %}
+                    <a class="qc-page-btn" href="{{ path('quince_search_score', baseQuery|merge({page: page + 1})) }}">&rsaquo;</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var checkAll = document.getElementById('qss-check-all-products');
+    var rowChecks = document.querySelectorAll('.qss-row-check-products');
+    var bulkBtn = document.getElementById('qss-bulk-btn-products');
+    var bulkIds = document.getElementById('qss-bulk-ids-products');
+    var bulkForm = document.getElementById('qss-bulk-form-products');
+
+    function refresh() {
+        var checked = Array.prototype.filter.call(rowChecks, function (c) { return c.checked; });
+        bulkBtn.style.display = checked.length ? '' : 'none';
+        bulkIds.value = checked.map(function (c) { return c.value; }).join(',');
+    }
+
+    if (checkAll) {
+        checkAll.addEventListener('change', function () {
+            rowChecks.forEach(function (c) { c.checked = checkAll.checked; });
+            refresh();
+        });
+    }
+    rowChecks.forEach(function (c) { c.addEventListener('change', refresh); });
+    if (bulkForm) {
+        bulkForm.addEventListener('submit', function (e) {
+            if (!bulkIds.value) { e.preventDefault(); }
+        });
+    }
+
+    document.querySelectorAll('.qss-score input[type="number"]').forEach(function (inp) {
+        inp.defaultValue = inp.value;
+    });
+})();
+</script>
+
+{% endblock %}
