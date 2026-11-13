@@ -1,11 +1,9 @@
 /**
- * Quince Search Score — tracker frontowy
- *
- * Port `flavor_search_score/views/js/search-score-tracker.js` (inny silnik).
+ * Quince Search Score: tracker frontowy
  *
  * Śledzi dwie rzeczy:
- *   1) Frazy wyszukiwania — gdy klient wysyła wyszukiwanie
- *   2) Kliknięcia w produkt z kontekstu wyszukiwania — na liście wyników
+ *   1) Frazy wyszukiwania: gdy klient wysyła wyszukiwanie
+ *   2) Kliknięcia w produkt z kontekstu wyszukiwania: na liście wyników
  *
  * Kontekst wyszukiwania przetrwa zmiany filtrów i sortowania (sessionStorage),
  * znika przy wyjściu ze stron wyszukiwania/produktu.
@@ -65,7 +63,7 @@
     }
 
     // Motyw Quince renderuje <body id="{$page.page_name}">, a natywny
-    // kontroler wyszukiwania PrestaShopa ma page_name "search" — sprawdzamy
+    // kontroler wyszukiwania PrestaShopa ma page_name "search". Sprawdzamy
     // to najpierw, URL jest tylko zapasem na nietypową konfigurację.
     function isSearchPage() {
         return document.body.id === 'search' ||

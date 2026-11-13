@@ -16,8 +16,7 @@ use Db;
 /**
  * Dostęp do dwóch tabel modułu: score produktów i dziennik fraz.
  *
- * Schemat 1:1 z `flavor_search_score` (inny silnik, ten sam pomysł): `score`
- * to jedna wspólna wartość, którą dolicza front (+1 za kliknięcie z kontekstu
+ * `score` to jedna wspólna wartość, którą dolicza front (+1 za kliknięcie z kontekstu
  * wyszukiwania) i którą obsługa może nadpisać wprost w panelu.
  */
 final class Repository
@@ -218,7 +217,7 @@ final class Repository
     }
 
     /**
-     * Drzewo kategorii spłaszczone do listy z wcięciami wg głębokości —
+     * Drzewo kategorii spłaszczone do listy z wcięciami wg głębokości:
      * filtr w panelu jest zwykłym `qc-select`, nie JS-owym drzewkiem.
      *
      * @return array<int,array{id:int,name:string,depth:int}>

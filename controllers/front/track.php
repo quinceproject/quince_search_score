@@ -14,17 +14,16 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * Quince Search Score — endpoint śledzenia (AJAX, publiczny, bez logowania).
+ * Quince Search Score: endpoint śledzenia (AJAX, publiczny, bez logowania).
  *
- * Port `flavor_search_score/controllers/front/track.php` 1:1 — dwa typy
- * zdarzeń, każdy wstawia nowy wiersz albo dolicza do istniejącego:
- *   1) phrase — fraza wyszukana (dolicza `count`)
- *   2) click  — kliknięcie w produkt z kontekstu wyszukiwania (dolicza `score`)
+ * Dwa typy zdarzeń, każdy wstawia nowy wiersz albo dolicza do istniejącego:
+ *   1) phrase: fraza wyszukana (dolicza `count`)
+ *   2) click:  kliknięcie w produkt z kontekstu wyszukiwania (dolicza `score`)
  *
  * URL: ?fc=module&module=quince_search_score&controller=track
  *
- * Bez CSRF celowo — to publiczny, anonimowy endpoint instrumentacji
- * (ten sam brak zabezpieczenia co w oryginale), nie formularz panelu.
+ * Bez CSRF celowo: to publiczny, anonimowy endpoint instrumentacji,
+ * nie formularz panelu.
  */
 class Quince_Search_ScoreTrackModuleFrontController extends ModuleFrontController
 {

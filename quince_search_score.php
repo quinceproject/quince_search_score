@@ -31,18 +31,14 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
 use Quince\SearchScore\Repository;
 
 /**
- * Quince Search Score — co klienci szukają i w co klikają po wyszukaniu.
+ * Quince Search Score: co klienci szukają i w co klikają po wyszukaniu.
  *
- * Port `flavor_search_score` (inny silnik): dwie tabele, śledzenie fraz
- * i kliknięć z frontu (bez logowania, publiczny endpoint), ręczny score
- * produktu w panelu — każde kliknięcie z kontekstu wyszukiwania dolicza +1,
- * obsługa może go też nadpisać wprost.
+ * Dwie tabele, śledzenie fraz i kliknięć z frontu (bez logowania, publiczny
+ * endpoint), ręczny score produktu w panelu. Każde kliknięcie z kontekstu
+ * wyszukiwania dolicza +1, obsługa może go też nadpisać wprost.
  *
- * Stoi obok `quince_search`, nie w nim — osobny moduł, tak jak
- * `quince_withdrawal` czy `quince_events`: to gromadzenie i przegląd danych
- * (lista, filtrowanie, edycja), nie ustawienie samej wyszukiwarki.
  * `quince_search` czyta stąd `score` jako opcjonalny, słaby sygnał
- * (rozstrzyga remisy trafności, nie przebija jej) — tylko gdy ten moduł
+ * (rozstrzyga remisy trafności, nie przebija jej), tylko gdy ten moduł
  * jest zainstalowany.
  */
 class Quince_Search_Score extends Module
@@ -129,7 +125,7 @@ class Quince_Search_Score extends Module
     }
 
     /**
-     * Tracker frontowy na każdej stronie sklepu — wykrywa stronę wyników sama,
+     * Tracker frontowy na każdej stronie sklepu. Wykrywa stronę wyników sam,
      * nic nie trzeba wołać z szablonu.
      */
     public function hookDisplayHeader(): void

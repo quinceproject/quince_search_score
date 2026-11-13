@@ -19,14 +19,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Panel: co klienci szukają (Phrases) i w co klikają po wyszukaniu, z ręcznym
- * score produktu (Products). Jeden kontroler, dwie zakładki — tak jak
- * w oryginale (`AdminFlavorSearchScoreController`), żeby filtr/sort/strona
- * żyły w jednym miejscu zamiast w dwóch prawie identycznych kopiach.
+ * score produktu (Products). Jeden kontroler, dwie zakładki: filtr, sort
+ * i strona żyją w jednym miejscu.
  *
  * Stan filtrów podróżuje w query stringu, nie w ukrytych polach formularza:
  * akcje POST (`updateScoreAction`, `bulkDelete*Action`) budują swój `action=`
  * z tym samym query stringiem, który dostały na wejściu, i oddają go
- * z powrotem przy przekierowaniu — strona wraca dokładnie tam, gdzie była.
+ * z powrotem przy przekierowaniu. Strona wraca dokładnie tam, gdzie była.
  */
 final class SearchScoreController extends FrameworkBundleAdminController
 {
@@ -58,7 +57,7 @@ final class SearchScoreController extends FrameworkBundleAdminController
         $idLang = (int) $this->getContext()->language->id;
         $idShop = (int) $this->getContext()->shop->id;
 
-        // Query string wspólny dla sortowania/stronicowania i dla akcji POST —
+        // Query string wspólny dla sortowania/stronicowania i dla akcji POST:
         // ta sama struktura wraca w każdym linku i w każdym `action=`.
         $baseQuery = [
             'tab' => $tab,
@@ -203,7 +202,7 @@ final class SearchScoreController extends FrameworkBundleAdminController
 
     /**
      * Przekierowanie na tę samą listę, z tym samym query stringiem, z którym
-     * przyszło żądanie POST — filtr/sort/strona wracają bez zmian.
+     * przyszło żądanie POST. Filtr/sort/strona wracają bez zmian.
      */
     private function backTo(Request $request, string $fallbackTab): RedirectResponse
     {

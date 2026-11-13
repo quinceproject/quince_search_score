@@ -1,4 +1,4 @@
-# Ekran modułu — natywna zakładka pod „Quince project" (zob. installTabs()
+# Ekran modułu: natywna zakładka pod „Quince project" (zob. installTabs()
 # w quince_search_score.php). Jeden kontroler, dwie zakładki Products/Phrases
 # przełączane query stringiem `tab`, nie osobnymi trasami.
 

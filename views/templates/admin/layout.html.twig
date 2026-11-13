@@ -3,17 +3,16 @@
 
   Rozszerza natywny layout panelu PrestaShopa, nie layout silnika Quince:
   ten moduł jest zakładką pod „Quince project", nie pozycją wewnątrz panelu
-  Quince Engine — `{% extends %}` z cudzego katalogu dawałoby tu obcy sidebar.
+  Quince Engine. `{% extends %}` z cudzego katalogu dawałoby tu obcy sidebar.
 
   Arkusze qc-* brane są wprost z silnika (asset), nie kopiowane: moduł zakłada
-  obecność `quince_engine` w tym sklepie, więc powielanie tokenów i powłoki
-  tylko wprowadziłoby ryzyko rozjechania dwóch kopii.
+  obecność `quince_engine` w tym sklepie.
 
   Ten moduł ma jeden kontroler i dwie zakładki (Products/Phrases)
-  przełączane query stringiem, nie osobnymi trasami — `quince_tabs` z bloku
+  przełączane query stringiem, nie osobnymi trasami. Blok `quince_tabs`
   poniżej (wspólny mechanizm `quinceTabs`/`quinceRoute` dla modułów z
-  kilkoma OSOBNYMI trasami) tu się nie przyda i zostaje nieużyty; nawigację
-  między zakładkami rysuje każdy szablon sam, w `quince_body`.
+  kilkoma OSOBNYMI trasami) zostaje tu nieużyty; nawigację między
+  zakładkami rysuje każdy szablon sam, w `quince_body`.
 #}
 {% extends '@PrestaShop/Admin/layout.html.twig' %}
 
