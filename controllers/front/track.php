@@ -39,6 +39,18 @@ class Quince_Search_ScoreTrackModuleFrontController extends ModuleFrontControlle
     /** Okno licznika w sekundach. */
     private const LIMIT_WINDOW = 600;
 
+    /** Jak długo po wyszukaniu frazy liczymy kliknięcia tego odwiedzającego (sekundy). */
+    private const CLICK_WINDOW = 1800;
+
+    /** Ile produktów kliknięcia dziennie pamiętamy w ciasteczku jednego odwiedzającego. */
+    private const CLICK_MEMORY = 50;
+
+    /** Kiedy ostatnio sprzątaliśmy jednorazowe frazy (znacznik czasu). */
+    public const LAST_PURGE = 'QUINCE_SEARCH_SCORE_LAST_PURGE';
+
+    /** Po ilu dniach znika fraza wyszukana tylko raz. */
+    private const PHRASE_KEEP_DAYS = 90;
+
     public function initContent()
     {
         if (!$this->isXmlHttpRequest() || Tools::getValue('type') === false) {
@@ -57,6 +69,7 @@ class Quince_Search_ScoreTrackModuleFrontController extends ModuleFrontControlle
         }
 
         $straznik->accept(self::LIMIT_KEY);
+        $this->purgeOldPhrases();
 
         $type = Tools::getValue('type');
 
@@ -103,9 +116,22 @@ class Quince_Search_ScoreTrackModuleFrontController extends ModuleFrontControlle
             ]);
         }
 
+        // Ślad wyszukania w ciasteczku sklepu (szyfrowanym, więc przeglądarka
+        // go nie podrobi): bez niego kliknięcie nie podbije wyniku produktu.
+        $this->context->cookie->qss_phrase_at = (string) time();
+        $this->context->cookie->write();
+
         $this->jsonSuccess(['tracked' => 'phrase']);
     }
 
+    /**
+     * Kliknięcie w produkt z wyników wyszukiwania.
+     *
+     * Wynik produktu decyduje o sekcji „najczęściej szukane" na stronie
+     * głównej, więc liczymy tylko kliknięcia odwiedzającego, który przed
+     * chwilą coś wyszukał, i tylko jedno na produkt dziennie. Odmowa wygląda
+     * jak przyjęte zdarzenie, które się nie policzyło.
+     */
     private function trackClick(): void
     {
         $idProduct = (int) Tools::getValue('id_product', 0);
@@ -114,13 +140,36 @@ class Quince_Search_ScoreTrackModuleFrontController extends ModuleFrontControlle
             $this->jsonError('Invalid id_product', 400);
         }
 
+        $cookie = $this->context->cookie;
+
+        if ((int) $cookie->qss_phrase_at < time() - self::CLICK_WINDOW) {
+            $this->jsonSuccess(['tracked' => false]);
+        }
+
+        // Tylko produkt, który istnieje i jest włączony w tym sklepie.
         $exists = (int) Db::getInstance()->getValue(
-            'SELECT `id_product` FROM `' . _DB_PREFIX_ . 'product` WHERE `id_product` = ' . $idProduct
+            'SELECT `id_product` FROM `' . _DB_PREFIX_ . 'product_shop`
+             WHERE `id_product` = ' . $idProduct . '
+               AND `id_shop` = ' . (int) $this->context->shop->id . '
+               AND `active` = 1'
         );
 
         if (!$exists) {
             $this->jsonError('Product not found', 404);
         }
+
+        // Kliknięte dziś produkty: „dzień|id,id,...". Nowy dzień czyści listę.
+        $dzis = date('Ymd');
+        [$dzien, $lista] = array_pad(explode('|', (string) $cookie->qss_clicks, 2), 2, '');
+        $klikniete = $dzien === $dzis && $lista !== '' ? array_map('intval', explode(',', $lista)) : [];
+
+        if (in_array($idProduct, $klikniete, true)) {
+            $this->jsonSuccess(['tracked' => false]);
+        }
+
+        $klikniete[] = $idProduct;
+        $cookie->qss_clicks = $dzis . '|' . implode(',', array_slice($klikniete, -self::CLICK_MEMORY));
+        $cookie->write();
 
         $db = Db::getInstance();
         $now = date('Y-m-d H:i:s');
@@ -145,6 +194,25 @@ class Quince_Search_ScoreTrackModuleFrontController extends ModuleFrontControlle
         }
 
         $this->jsonSuccess(['tracked' => 'click', 'id_product' => $idProduct]);
+    }
+
+    /**
+     * Frazy wyszukane tylko raz i dawno, najwyżej raz na dobę. Fraza bywa
+     * nazwiskiem albo numerem zamówienia, więc nie trzymamy jej bez końca;
+     * frazy powtarzane zostają, bo z nich panel czyta trendy.
+     */
+    private function purgeOldPhrases(): void
+    {
+        if ((int) Configuration::getGlobalValue(self::LAST_PURGE) > time() - 86400) {
+            return;
+        }
+
+        Configuration::updateGlobalValue(self::LAST_PURGE, (string) time());
+
+        Db::getInstance()->delete(
+            'quince_search_score_phrases',
+            '`count` = 1 AND `date_upd` < "' . date('Y-m-d H:i:s', time() - self::PHRASE_KEEP_DAYS * 86400) . '"'
+        );
     }
 
     private function jsonSuccess(array $data = []): void

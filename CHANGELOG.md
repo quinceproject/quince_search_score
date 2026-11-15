@@ -4,6 +4,16 @@ All notable changes to this module are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the versioning follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2026-11-15
+
+### Security
+
+- **A click raises a product's score only after a real search:** the same visitor
+  must have searched in the last 30 minutes, the product must be active, and each
+  product counts once a day per visitor. Before, anyone could raise any product's
+  score, which decides the "most searched" section on the home page.
+- Phrases searched only once are deleted after 90 days.
+
 ## [0.1.3] - 2026-11-15
 
 ### Security
