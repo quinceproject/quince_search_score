@@ -11,6 +11,10 @@ declare(strict_types=1);
 
 namespace Quince\SearchScore\Controller\Admin;
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
 use PrestaShopBundle\Security\Attribute\AdminSecurity;
 use Quince\SearchScore\Repository;
