@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Quince\SearchScore\Controller\Admin;
 
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
+use PrestaShopBundle\Security\Attribute\AdminSecurity;
 use Quince\SearchScore\Repository;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,6 +39,7 @@ final class SearchScoreController extends FrameworkBundleAdminController
     {
     }
 
+    #[AdminSecurity("is_granted('read', request.get('_legacy_controller'))", message: 'You do not have permission to view this.')]
     public function indexAction(Request $request): Response
     {
         $tab = $request->query->get('tab', 'products') === 'phrases' ? 'phrases' : 'products';
@@ -130,6 +132,7 @@ final class SearchScoreController extends FrameworkBundleAdminController
         ]);
     }
 
+    #[AdminSecurity("is_granted('update', request.get('_legacy_controller'))", message: 'You do not have permission to change this.')]
     public function updateScoreAction(Request $request): RedirectResponse
     {
         $back = $this->backTo($request, 'products');
@@ -154,6 +157,7 @@ final class SearchScoreController extends FrameworkBundleAdminController
         return $back;
     }
 
+    #[AdminSecurity("is_granted('delete', request.get('_legacy_controller'))", message: 'You do not have permission to delete this.')]
     public function bulkDeleteProductsAction(Request $request): RedirectResponse
     {
         $back = $this->backTo($request, 'products');
@@ -177,6 +181,7 @@ final class SearchScoreController extends FrameworkBundleAdminController
         return $back;
     }
 
+    #[AdminSecurity("is_granted('delete', request.get('_legacy_controller'))", message: 'You do not have permission to delete this.')]
     public function bulkDeletePhrasesAction(Request $request): RedirectResponse
     {
         $back = $this->backTo($request, 'phrases');
